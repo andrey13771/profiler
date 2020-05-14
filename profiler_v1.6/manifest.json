@@ -1,0 +1,27 @@
+{
+	"name": "Profiler",
+	"version": "1.6",
+	"description": "Profiler will track your browsing habits to create a web profile.",
+	"permissions": [
+		"tabs",
+		"history",
+		"identity",
+		"identity.email",
+		"http://localhost:5000/*",
+		"https://andrey13771.pythonanywhere.com/*"
+	],
+	"background": {
+		"page": "background.html"
+	},
+	"content_scripts": [
+		{
+			"js": ["jquery-3.5.1.js", "chrome-promise.js"],
+			"matches": ["http://*/*", "https://*/*"]
+		}
+
+	],
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"manifest_version": 2
+}
