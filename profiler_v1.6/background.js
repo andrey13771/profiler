@@ -1,4 +1,9 @@
 let suspicious_counter = 0;
+let userId;
+
+chrome.identity.getProfileUserInfo(info => {
+	userId = info.id;
+})
 
 chrome.runtime.onInstalled.addListener(function(details) {
 	if (details.reason === 'install') {

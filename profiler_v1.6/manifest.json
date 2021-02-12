@@ -10,6 +10,11 @@
 		"http://localhost:5000/*",
 		"https://andrey13771.pythonanywhere.com/*"
 	],
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkND/NaYuLl0/veJqPrU6WwhSpumO+L5h8x8Oz06vnNJznb1sj7zqqXA2cHmevCYszxktBn5Fg1yl9CwYF7EGn394yVY8IEdu/R2so9x3PzRBhGWbGol2SSx7ZFo4X8SBwYVqFVOjk9qrMMkBEv6WS1iZhp1hgvUa6mlZ2oTOkICexhwDg8cwHT2WsYwW79NutmE408znFibfL7kli+6KeQpSgA6F6dJNTkkLfXNyEX53vtDuH/MWtAeLf/1LOLEv40k2EVKUx+XcGyNyH7+z0j610KTwwElsMJdS/eq7CB+GLd2dcetIRjcxF1EtStSecl27+JPk1ovoYIJB+nxCvQIDAQAB",
+	"oauth2": {
+		"client_id": "567681894938-sijh9j09deq7flb99ocqabmu4ft8ppjg.apps.googleusercontent.com",
+		"scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+	},
 	"background": {
 		"page": "background.html"
 	},
