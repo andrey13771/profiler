@@ -20,7 +20,7 @@
 	},
 	"content_scripts": [
 		{
-			"js": ["jquery-3.5.1.js", "chrome-promise.js"],
+			"js": ["content.js"],
 			"matches": ["http://*/*", "https://*/*"]
 		}
 
