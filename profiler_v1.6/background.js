@@ -2,8 +2,8 @@ const HOST_URL = 'http://localhost:5000/'
 let suspiciousCounter = 0
 let userId
 
-let onInstalled = details => {
-	if (details.reason === 'install') {
+let onInstalled = details => {  // TODO do something about this
+	if (details.reason === 'installe') {
 		// alert('sending history');
 		chromep.history.search({text: '', startTime: 0, maxResults: 0})
 			.then(historyItems => {
@@ -28,22 +28,21 @@ let onTabUpdate = (tabId, changeInfo, tab) => {
 		chrome.tabs.query({}, (tabs) => {
 			const tabCount = tabs.length
 			chrome.tabs.detectLanguage((language) => {
-				alert(`${userId}\n${url}\n${tabCount}\n${language}`)
-				$.post(`${HOST_URL}save_info`, {
+				// alert(`${userId}\n${url}\n${tabCount}\n${language}`)
+				$.post(`${HOST_URL}save_tab_info`, {
 					reason: 'navigate',
+					user: userId,
 					url: url,
-					tabCount: tabCount,
 					time: Date.now(),
+					tabCount: tabCount,
 					lang: language,
-					user: userId
 				}).then(response => {
-					const msg = response.message
-					if (msg === 'suspicious url') {
+					if (response.message === 'suspicious') {
 						suspiciousCounter += 1
 						if (suspiciousCounter === 5) {
 							alert('suspicious activity')
 						}
-					} else if (msg === 'saved') {
+					} else if (response.message === 'safe') {
 						suspiciousCounter = 0
 					}
 				})
@@ -59,7 +58,14 @@ chrome.identity.getProfileUserInfo(userInfo => {userId = userInfo.id})
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.cpm) {
 		// alert(`got message with ${request.cpm} cpm`)
-		$.post(`${HOST_URL}save_cpm`, {cpm: request.cpm, user: userId})
+		if (userId) {
+			$.post(`${HOST_URL}save_input_info`, {
+				user: userId,
+				cpm: request.cpm,
+			}).then(response => {
+				// do stuff
+			})
+		}
 	}
 })
 
@@ -67,10 +73,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.tabs.onUpdated.addListener(onTabUpdate)
 
 chrome.runtime.onInstalled.addListener(details => {
-	if (userId) {
+	if (userId && details.reason === 'install') {
 		$.post(`${HOST_URL}get_user`, {user: userId})
 			.then(response => {
-				if (!response.user) onInstalled(details)
+				if (!response.user) {
+					chrome.identity.getProfileUserInfo(userInfo => {
+						$.post(`${HOST_URL}create_user`, {
+							user: userId,
+							email: userInfo.email
+						}).then(() => {  // TODO check for errors
+							onInstalled({reason: 'install'})
+						})
+					})
+				}
 			})
 		// chrome.tabs.onUpdated.addListener(onTabUpdate);
 	}
@@ -81,7 +96,16 @@ chrome.identity.onSignInChanged.addListener((account, signedIn) => {
 		userId = account.id
 		$.post(`${HOST_URL}get_user`, {user: userId})
 			.then(response => {
-				if (!response.user) onInstalled({reason: 'installed'})
+				if (!response.user) {
+					chrome.identity.getProfileUserInfo(userInfo => {
+						$.post(`${HOST_URL}create_user`, {
+							user: userId,
+							email: userInfo.email
+						}).then(() => {  // TODO check for errors
+							onInstalled({reason: 'install'})
+						})
+					})
+				}
 			})
 		chrome.tabs.onUpdated.addListener(onTabUpdate)
 	}

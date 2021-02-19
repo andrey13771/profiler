@@ -8,7 +8,7 @@ from sklearn.neighbors import LocalOutlierFactor
 import joblib
 import pandas as pd
 from sqlalchemy import create_engine
-from profiler_server.config import Config
+from config import Config
 
 STOPWORDS = ['www', 'com', 'org', 'net', 'int', 'edu', 'gov', 'mil']
 DELIMITERS = ['&', '$', '+', ',', '/', ':', ';', '=', '?', '@', '#', '-', '.', '_', '~']
@@ -34,8 +34,16 @@ def train():
     joblib.dump(pipeline, 'tfidf-lof.sav')
 
 
-def classify_url(url):
-    path = os.path.abspath(os.path.dirname(__file__))
-    clf = joblib.load(os.path.join(path, 'tfidf-lof.sav'))
-    pred = clf.predict((url, ))
-    return int(pred[0])
+def predict_tab_info(user, url, time, tabs, lang):
+    return
+
+
+def predict_input_info(user, cpm):
+    return
+
+
+# def classify_url(url):
+#     path = os.path.abspath(os.path.dirname(__file__))
+#     clf = joblib.load(os.path.join(path, 'tfidf-lof.sav'))
+#     pred = clf.predict((url, ))
+#     return int(pred[0])
