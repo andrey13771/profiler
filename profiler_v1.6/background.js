@@ -1,4 +1,5 @@
-const HOST_URL = 'http://localhost:5000/'
+// const HOST_URL = 'http://localhost:5000/'
+const HOST_URL = 'https://chrome-profiler.herokuapp.com/'
 let suspiciousCounter = 0
 let userId
 
