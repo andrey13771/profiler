@@ -30,6 +30,7 @@ class InputInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     cpm = db.Column(db.Float, index=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return f'<InputInfo user:{self.user_id}, cpm: {self.cpm}>'

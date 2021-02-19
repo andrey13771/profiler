@@ -63,6 +63,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			$.post(`${HOST_URL}save_input_info`, {
 				user: userId,
 				cpm: request.cpm,
+				time: Date.now()
 			}).then(response => {
 				// do stuff
 			})

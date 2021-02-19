@@ -46,8 +46,9 @@ def save_tab_info():
 def save_input_info():
     user = User.query.filter_by(google_id=request.form['user']).first()
     cpm = request.form['cpm']
+    time = datetime.fromtimestamp(float(request.form['time']) / 1000)  # TODO add default timestamp
     # TODO some predictions
-    info = InputInfo(user=user, cpm=cpm)
+    info = InputInfo(user=user, cpm=cpm, timestamp=time)
     db.session.add(info)
     db.session.commit()
     return {'message': 'safe'}
