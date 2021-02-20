@@ -29,7 +29,7 @@ def create_user():
 def save_tab_info():
     user = User.query.filter_by(google_id=request.form['user']).first()
     url = request.form['url']
-    url = url.split('/')[2]  # TODO maybe also keep the other part?
+    # url = url.split('/')[2]  # TODO maybe also keep the other part?
     time = datetime.fromtimestamp(float(request.form['time']) / 1000)  # TODO add default timestamp
     tabs = int(request.form['tabCount'])
     lang = request.form['lang']
