@@ -1,7 +1,8 @@
+import json
 from datetime import datetime
 from flask import request
 from app import app, db
-from app.models.models import User, TabInfo, InputInfo
+from app.models.models import User, TabInfo, InputInfo, KeyboardTiming
 from app.logic.classify import predict_tab_info
 
 
@@ -50,6 +51,20 @@ def save_input_info():
     # TODO some predictions
     info = InputInfo(user=user, cpm=cpm, timestamp=time)
     db.session.add(info)
+    db.session.commit()
+    return {'message': 'safe'}
+
+@app.route('/save_kb_timings', methods=['POST'])
+def save_kb_timings():
+    user = User.query.filter_by(google_id=request.form['user']).first()
+    keypress = json.loads(request.form['keypress'])
+    keyup = json.loads(request.form['keyup'])
+    time = datetime.fromtimestamp(float(request.form['time']) / 1000) # TODO add default timestamp
+    # print('keypress', keypress)
+    # print('keyup', keyup)
+    # TODO predictions
+    timings = KeyboardTiming(user=user, keypress=keypress, keyup=keyup, timestamp=time)
+    db.session.add(timings)
     db.session.commit()
     return {'message': 'safe'}
 

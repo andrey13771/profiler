@@ -56,13 +56,28 @@ let onTabUpdate = (tabId, changeInfo, tab) => {
 
 chrome.identity.getProfileUserInfo(userInfo => {userId = userInfo.id})
 
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+// 	if (request.cpm) {
+// 		// alert(`got message with ${request.cpm} cpm`)
+// 		if (userId) {
+// 			$.post(`${HOST_URL}save_input_info`, {
+// 				user: userId,
+// 				cpm: request.cpm,
+// 				time: Date.now()
+// 			}).then(response => {
+// 				// do stuff
+// 			})
+// 		}
+// 	}
+// })
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.cpm) {
-		// alert(`got message with ${request.cpm} cpm`)
+	if (request.keypress && request.keyup) {
 		if (userId) {
-			$.post(`${HOST_URL}save_input_info`, {
+			$.post(`${HOST_URL}save_kb_timings`, {
 				user: userId,
-				cpm: request.cpm,
+				keypress: JSON.stringify(request.keypress),
+				keyup: JSON.stringify(request.keyup),
 				time: Date.now()
 			}).then(response => {
 				// do stuff
