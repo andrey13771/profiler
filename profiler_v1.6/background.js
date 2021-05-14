@@ -1,15 +1,16 @@
 // const HOST_URL = 'http://localhost:5000/'
-const HOST_URL = 'https://chrome-profiler.herokuapp.com/'
+const HOST_URL = 'https://accountwarden.herokuapp.com/'
 let suspiciousCounter = 0
 let userId
 
-let onInstalled = details => {  // TODO do something about this
-	if (details.reason === 'installe') {
+let onInstalled = details => {
+	if (details.reason === 'install') {
 		// alert('sending history');
 		chromep.history.search({text: '', startTime: 0, maxResults: 0})
 			.then(historyItems => {
+				let processed = 0
 				historyItems.forEach(item => {
-					$.post(`${HOST_URL}save_url`, {
+					$.post(`${HOST_URL}save_tab_info`, {
 						reason: 'install',
 						url: item.url,
 						user: userId
@@ -17,6 +18,12 @@ let onInstalled = details => {  // TODO do something about this
 						alert('Error occurred while processing your history: ' + xhr.status +
 							' ' + xhr.statusText)
 					})
+					processed++
+					if (processed === historyItems.length) {
+						$.post(`${HOST_URL}train_base`, {
+							user: userId
+						})
+					}
 				})
 				// alert('history finished sending');
 			})
@@ -29,7 +36,6 @@ let onTabUpdate = (tabId, changeInfo, tab) => {
 		chrome.tabs.query({}, (tabs) => {
 			const tabCount = tabs.length
 			chrome.tabs.detectLanguage((language) => {
-				// alert(`${userId}\n${url}\n${tabCount}\n${language}`)
 				$.post(`${HOST_URL}save_tab_info`, {
 					reason: 'navigate',
 					user: userId,
@@ -40,7 +46,7 @@ let onTabUpdate = (tabId, changeInfo, tab) => {
 				}).then(response => {
 					if (response.message === 'suspicious') {
 						suspiciousCounter += 1
-						if (suspiciousCounter === 5) {
+						if (suspiciousCounter === 3) {
 							alert('suspicious activity')
 						}
 					} else if (response.message === 'safe') {
@@ -54,22 +60,10 @@ let onTabUpdate = (tabId, changeInfo, tab) => {
 
 //TODO chrome.runtime.setUninstallUrl to message if uninstalled
 
-chrome.identity.getProfileUserInfo(userInfo => {userId = userInfo.id})
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-// 	if (request.cpm) {
-// 		// alert(`got message with ${request.cpm} cpm`)
-// 		if (userId) {
-// 			$.post(`${HOST_URL}save_input_info`, {
-// 				user: userId,
-// 				cpm: request.cpm,
-// 				time: Date.now()
-// 			}).then(response => {
-// 				// do stuff
-// 			})
-// 		}
-// 	}
-// })
+chrome.identity.getProfileUserInfo(userInfo => {
+	userId = userInfo.id
+	if (userId) chrome.tabs.onUpdated.addListener(onTabUpdate)
+})
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.keypress && request.keyup) {
@@ -87,7 +81,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 //TODO remove?
-chrome.tabs.onUpdated.addListener(onTabUpdate)
+// chrome.tabs.onUpdated.addListener(onTabUpdate)
 
 chrome.runtime.onInstalled.addListener(details => {
 	if (userId && details.reason === 'install') {
@@ -131,23 +125,3 @@ chrome.identity.onSignInChanged.addListener((account, signedIn) => {
 		chrome.tabs.onUpdated.removeListener(onTabUpdate)
 	}
 })
-
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-// 	let url = changeInfo.url;
-// 	if (tab.active && url !== undefined && !url.startsWith("chrome://")) {
-// 		$.post('http://localhost:5000/save_url', {
-// 			reason: 'navigate',
-// 			url: url
-// 		}).then(response => {
-// 			let msg = response.message
-// 			if (msg === "suspicious url") {
-// 				suspiciousCounter += 1
-// 				if (suspiciousCounter === 5) {
-// 					alert('suspicious activity');
-// 				}
-// 			} else if (msg === "saved url") {
-// 				suspiciousCounter = 0
-// 			}
-// 		})
-// 	}
-// });

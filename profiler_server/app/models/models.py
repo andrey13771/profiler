@@ -28,6 +28,7 @@ class TabInfo(db.Model):
                f'tabs: {self.tab_count}, lang: {self.lang}>'
 
 
+# legacy
 class InputInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

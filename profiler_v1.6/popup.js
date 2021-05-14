@@ -1,6 +1,6 @@
 chrome.identity.getProfileUserInfo(userInfo => {
 	$("#greeting").html("Hello, " + "<b>" + userInfo.email + "</b>" +
-		"<br>" + "Profiler is recording your history")
+		"<br>" + "Account Warden is recording your activity")
 })
 
 

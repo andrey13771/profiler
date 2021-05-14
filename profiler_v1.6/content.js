@@ -1,29 +1,22 @@
-let start
 let now
 let finish
-let charCount = 0
+let keypress = []
+let keyup = []
 
-let sendCPM = () => {
-    if (charCount > 3) {
-        const intervalInMinutes = (now - start) / 60000
-        const cpm = charCount / intervalInMinutes
-        // alert(`${charCount} characters in ${intervalInMinutes * 60} seconds`)
-        chrome.runtime.sendMessage({cpm: cpm})
-    }
-    start = finish
-    now = finish
-    charCount = 1
+let sendTimings = () => {
+    if (keypress.length > 3) chrome.runtime.sendMessage({'keypress': keypress, 'keyup': keyup})
+    keypress = []
+    keyup = []
 }
 
-window.addEventListener('keydown', event => {
-    finish = Date.now()
-    if (!start) {
-        start = finish
-        now = finish
-    }
-    if (finish - now > 5000) sendCPM()
-    else {
-        charCount++
-        now = finish
-    }
+window.addEventListener('keypress', evt => {
+    if (evt.repeat) {return}
+    if (Date.now() - now > 5000) sendTimings()
+    keypress.push({'code': evt.code, 'timestamp': evt.timeStamp, 'alt': evt.altKey,
+        'shift': evt.shiftKey, 'ctrl': evt.ctrlKey, 'meta': evt.metaKey})
+})
+
+window.addEventListener('keyup', evt => {
+    keyup.push({'code': evt.code, 'timestamp': evt.timeStamp})
+    now = Date.now()
 })
